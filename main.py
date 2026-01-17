@@ -1,5 +1,5 @@
 import sys, json, os
-from PyQt5.QtWidgets import QApplication, QWidget, QTextEdit, QComboBox, QPushButton, QLabel, QHBoxLayout,QVBoxLayout, QBoxLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QTextEdit, QComboBox, QPushButton, QLabel, QHBoxLayout,QVBoxLayout, QBoxLayout, QMessageBox
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
 from googletrans import Translator
@@ -84,12 +84,28 @@ class Main(QWidget):
         self.add_button.clicked.connect(self.addition)
         self.sub_button.clicked.connect(self.subtraction)
         
+    #misinput error
+    def misinput(self):
+        message_box = QMessageBox()
+        message_box.setIcon(QMessageBox.Warning)
+        message_box.setText("Please Input a Number With No More Than Two Decimal Places, Do Not Include Commas")
+        self.input_box.clear()
+        return message_box.exec_()
 
     #add function
     def addition(self):
         #Collect input
         num_str = self.input_box.toPlainText()
-        num = float(num_str)
+        #Give User a Warning if the input isn't int or float w two decimals
+        try:
+            num = float(num_str)
+        except ValueError:
+            return self.misinput()
+        
+        if "." in num_str:
+            num_splice = num_str[num_str.index(".") + 1:]
+            if len(num_splice) > 2:
+                return self.misinput()
 
         #Collect current profit value
         num_str2 = self.profit_num.text()
@@ -108,7 +124,16 @@ class Main(QWidget):
     def subtraction(self):
         #Collect input
         num_str = self.input_box.toPlainText()
-        num = float(num_str)
+        #Give User a Warning if the input isn't int or float w 2 decimals
+        try:
+            num = float(num_str)
+        except ValueError:
+            return self.misinput()
+        
+        if "." in num_str:
+            num_splice = num_str[num_str.index(".") + 1:]
+            if len(num_splice) > 2:
+                return self.misinput()
 
         #Collect current profit value
         num_str2 = self.profit_num.text()
